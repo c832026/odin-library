@@ -10,7 +10,7 @@
 </head>
 <body>
     <h1>Library</h1>
-    <div class="button-div"><button>New Book</button></div>
+    <div class="button-div"><button id="newBook">New Book</button></div>
     <div id="book-form-container">
         <form id="book-form">
             <div>
@@ -34,7 +34,9 @@
                     <label for="input-isNotRead">No</label>
                 </div>
             </div>
-            <div><input type="submit" value="Add book to library"></div>
+            <div>
+                <button type="button" id="addBookSubmit">Add book to library</button>
+            </div>
         </form>
     </div>
     <div id="flex-container">

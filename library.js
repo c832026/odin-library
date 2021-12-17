@@ -11,23 +11,9 @@ function addBookToLibrary(title, author, pages, isRead) {
     const newBook = new Book(title, author, pages, isRead);
     myLibrary.push(newBook);
 }
-// Test, add objects to the array
-for (let i = 0; i < 30; i++) {
-    addBookToLibrary('Harry Potter', 'J.K Rolin', '300', true);
-}
 
-function showForm(event) {
-
-}
-
-
-const CONTAINER = document.querySelector('#flex-container');
-const ADD_BUTTON = document.querySelector('.button-div>button');
-
-// Create cards using the info from every book objects
-for (let i = 0, length = myLibrary.length; i < length; i++) {
+function appendCardToContainer(book) {
     const bookCard = document.createElement('div');
-    const book = myLibrary[i];
     for (const attribute in book) {
         const para = document.createElement('div');
         // add Read toggle button
@@ -63,4 +49,59 @@ for (let i = 0, length = myLibrary.length; i < length; i++) {
     CONTAINER.appendChild(bookCard);
 }
 
+function addBook(event) {
+    hideForm(event);
+    // Have all the input to form a book object
+    let title = document.querySelector('#input-title');
+    let author = document.querySelector('#input-author');
+    let pages = document.querySelector('#input-pages');
+    let isRead;
+    const isReadRadios = document.querySelectorAll('input[name="isRead"]');
+    isReadRadios.forEach(radio => {
+        if (radio.checked === true) {
+            isRead = radio.value;
+        }
+    });
+    // Add the book to library
+    addBookToLibrary(title.value, author.value, pages.value, (isRead === 'true'));
+    
+    // Append the book to the container
+    const newBook = myLibrary[myLibrary.length - 1];
+    appendCardToContainer(newBook);
+
+    // Refresh the input field in the form
+    title.value = '';
+    author.value = '';
+    pages.value = '';
+}
+
+
+const CONTAINER = document.querySelector('#flex-container');
+const ADD_BOOK_CONTAINER = document.querySelector('#book-form-container');
+const ADD_BUTTON = document.querySelector('.button-div>button');
+const ADD_BOOK_SUBMIT = document.querySelector('#addBookSubmit');
+
+// Test, add book objects to the array
+for (let i = 0; i < 30; i++) {
+    addBookToLibrary('Harry Potter', 'J.K Rolin', '300', true);
+}
+
+function showForm() {
+    ADD_BOOK_CONTAINER.style.display = 'block';
+}
+
+function hideForm(event) {
+    if (event.target === ADD_BOOK_CONTAINER || event.target === ADD_BOOK_SUBMIT) {
+        ADD_BOOK_CONTAINER.style.display = 'none';
+    }
+}
+
+// Create and append cards to container using the book in library
+for (let i = 0, length = myLibrary.length; i < length; i++) {
+    const book = myLibrary[i];
+    appendCardToContainer(book);
+}
+
 ADD_BUTTON.addEventListener('click', showForm);
+ADD_BOOK_CONTAINER.addEventListener('click', hideForm);
+ADD_BOOK_SUBMIT.addEventListener('click', addBook);
