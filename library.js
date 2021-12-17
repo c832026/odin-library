@@ -12,41 +12,50 @@ function addBookToLibrary(title, author, pages, isRead) {
     myLibrary.push(newBook);
 }
 
-function appendCardToContainer(book) {
-    const bookCard = document.createElement('div');
-    for (const attribute in book) {
-        const para = document.createElement('div');
-        // add Read toggle button
-        if (attribute === 'isRead') {
-            const togglePara = document.createElement('div');
-            const readToggleButton = document.createElement('button');
-            if (book[attribute] === true) {
-                readToggleButton.textContent = 'Read';
-            } else {
-                readToggleButton.textContent = 'Unread';
-            }
+function appendCardsToContainer() {
+    let book;
+    for (let i = 0, length = myLibrary.length; i < length; i++) {
+        book = myLibrary[i];
+        const bookCard = document.createElement('div');
 
-            readToggleButton.classList.add('isRead-button');
-            togglePara.appendChild(readToggleButton);
-            bookCard.appendChild(togglePara);
-        // Or add book title or author
-        } else {
-            para.textContent = `${attribute}: ${book[attribute]} `;
-            bookCard.appendChild(para);
+        for (const attribute in book) {
+            const para = document.createElement('div');
+            // add Read toggle button
+            if (attribute === 'isRead') {
+                const togglePara = document.createElement('div');
+                const readToggleButton = document.createElement('button');
+                if (book[attribute] === true) {
+                    readToggleButton.textContent = 'Read';
+                } else {
+                    readToggleButton.textContent = 'Unread';
+                }
+
+                readToggleButton.classList.add('isRead-button');
+                togglePara.appendChild(readToggleButton);
+                bookCard.appendChild(togglePara);
+            // Or add book title or author
+            } else {
+                para.textContent = `${attribute}: ${book[attribute]} `;
+                bookCard.appendChild(para);
+            }
         }
-    }
-    // Add remove button on each book
-    const buttonPara = document.createElement('div');
-    const button = document.createElement('button');
-    button.textContent = 'Remove';
-    button.classList.add('remove-button');
-    buttonPara.appendChild(button);
-    bookCard.appendChild(buttonPara);
-    
-    // Styling cards
-    bookCard.classList.add('bookCard');
-    // Attach card to the container
-    CONTAINER.appendChild(bookCard);
+        // Add remove button on each book
+        const buttonPara = document.createElement('div');
+        const button = document.createElement('button');
+        button.textContent = 'Remove';
+        button.classList.add('remove-button');
+        buttonPara.appendChild(button);
+        bookCard.appendChild(buttonPara);
+        
+        // Styling cards
+        bookCard.classList.add('bookCard');
+
+        // Give cards an index
+        bookCard.dataset.index = i;
+
+        // Attach card to the container
+        CONTAINER.appendChild(bookCard);
+    }   
 }
 
 function addBook(event) {
@@ -65,25 +74,15 @@ function addBook(event) {
     // Add the book to library
     addBookToLibrary(title.value, author.value, pages.value, (isRead === 'true'));
     
-    // Append the book to the container
-    const newBook = myLibrary[myLibrary.length - 1];
-    appendCardToContainer(newBook);
+    // Re-render the library
+    CONTAINER.innerHTML = '';
+    appendCardsToContainer();
+    addRemoveListeners();
 
-    // Refresh the input field in the form
+    // Clean the input field in the form
     title.value = '';
     author.value = '';
     pages.value = '';
-}
-
-
-const CONTAINER = document.querySelector('#flex-container');
-const ADD_BOOK_CONTAINER = document.querySelector('#book-form-container');
-const ADD_BUTTON = document.querySelector('.button-div>button');
-const ADD_BOOK_SUBMIT = document.querySelector('#addBookSubmit');
-
-// Test, add book objects to the array
-for (let i = 0; i < 30; i++) {
-    addBookToLibrary('Harry Potter', 'J.K Rolin', '300', true);
 }
 
 function showForm() {
@@ -96,11 +95,36 @@ function hideForm(event) {
     }
 }
 
-// Create and append cards to container using the book in library
-for (let i = 0, length = myLibrary.length; i < length; i++) {
-    const book = myLibrary[i];
-    appendCardToContainer(book);
+function addRemoveListeners() {
+    const remove_buttons = document.querySelectorAll('button.remove-button');
+    remove_buttons.forEach(button => {
+        button.addEventListener('click', event => {
+            const triggeredCard = event.target.parentNode.parentNode;
+            const index = triggeredCard.dataset.index;
+            // Delete the book from the library
+            myLibrary.splice(index, 1);
+            // Re-render the library
+            CONTAINER.innerHTML = '';
+            appendCardsToContainer();
+            addRemoveListeners();
+        })
+    })
 }
+
+
+const CONTAINER = document.querySelector('#flex-container');
+const ADD_BOOK_CONTAINER = document.querySelector('#book-form-container');
+const ADD_BUTTON = document.querySelector('.button-div>button');
+const ADD_BOOK_SUBMIT = document.querySelector('#addBookSubmit');
+
+// Test, add book objects to the array
+for (let i = 0; i < 30; i++) {
+    addBookToLibrary(`Book${i}`, 'J.K Rolin', '300', true);
+}
+
+// Create and append cards to container using the book in library
+appendCardsToContainer();
+addRemoveListeners();
 
 ADD_BUTTON.addEventListener('click', showForm);
 ADD_BOOK_CONTAINER.addEventListener('click', hideForm);
