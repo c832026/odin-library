@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./library.js" defer></script>
+</head>
+<body>
+    <h1>Library</h1>
+    <div class="button-div"><button>New Book</button></div>
+    <div id="book-form-container">
+        <form id="book-form">
+            <div>
+                <label for="input-title">What's the title of the book?</label> </br>
+                <input type="text" id="input-title">
+            </div>
+            <div>
+                <label for="input-author">Who's the author of the book?</label> </br>
+                <input type="text" id="input-author">
+            </div>
+            <div>
+                <label for="input-pages">How many pages in the book?</label> </br>
+                <input type="text" id="input-pages">
+            </div>
+            <div>
+                <div>Did you read it? </div>
+                <div>
+                    <input type="radio" id="input-isRead" name="isRead" value="true">
+                    <label for="input-isRead">Yes</label>
+                    <input type="radio" id="input-isNotRead" name="isRead" value="false">
+                    <label for="input-isNotRead">No</label>
+                </div>
+            </div>
+            <div><input type="submit" value="Add book to library"></div>
+        </form>
+    </div>
+    <div id="flex-container">
+
+    </div>
+</body>
+</html>
