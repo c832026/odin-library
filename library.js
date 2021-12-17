@@ -7,6 +7,11 @@ function Book(title, author, pages, isRead) {
     this.isRead = isRead;
 }
 
+Book.prototype.toggleRead = function() {
+    this.isRead = (this.isRead === true) ? false : true;
+}
+
+
 function addBookToLibrary(title, author, pages, isRead) {
     const newBook = new Book(title, author, pages, isRead);
     myLibrary.push(newBook);
@@ -14,17 +19,18 @@ function addBookToLibrary(title, author, pages, isRead) {
 
 function appendCardsToContainer() {
     let book;
+    // Generate book cards using the info of each books in myLibrary array
     for (let i = 0, length = myLibrary.length; i < length; i++) {
         book = myLibrary[i];
         const bookCard = document.createElement('div');
 
-        for (const attribute in book) {
+        for (const property in book) {
             const para = document.createElement('div');
-            // add Read toggle button
-            if (attribute === 'isRead') {
+            // Add toggle button for "Read" or "Unread"
+            if (property === 'isRead') {
                 const togglePara = document.createElement('div');
                 const readToggleButton = document.createElement('button');
-                if (book[attribute] === true) {
+                if (book[property] === true) {
                     readToggleButton.textContent = 'Read';
                 } else {
                     readToggleButton.textContent = 'Unread';
@@ -33,13 +39,13 @@ function appendCardsToContainer() {
                 readToggleButton.classList.add('isRead-button');
                 togglePara.appendChild(readToggleButton);
                 bookCard.appendChild(togglePara);
-            // Or add book title or author
-            } else {
-                para.textContent = `${attribute}: ${book[attribute]} `;
+            // Add title and author in the book card
+            } else if (book.hasOwnProperty(property)) {
+                para.textContent = `${property}: ${book[property]} `;
                 bookCard.appendChild(para);
             }
         }
-        // Add remove button on each book
+        // Add remove button in each book card
         const buttonPara = document.createElement('div');
         const button = document.createElement('button');
         button.textContent = 'Remove';
@@ -47,10 +53,10 @@ function appendCardsToContainer() {
         buttonPara.appendChild(button);
         bookCard.appendChild(buttonPara);
         
-        // Styling cards
+        // Styling card
         bookCard.classList.add('bookCard');
 
-        // Give cards an index
+        // Give card an index
         bookCard.dataset.index = i;
 
         // Attach card to the container
@@ -60,7 +66,7 @@ function appendCardsToContainer() {
 
 function addBook(event) {
     hideForm(event);
-    // Have all the input to form a book object
+    // Using all the input to form a book object
     let title = document.querySelector('#input-title');
     let author = document.querySelector('#input-author');
     let pages = document.querySelector('#input-pages');
@@ -71,15 +77,13 @@ function addBook(event) {
             isRead = radio.value;
         }
     });
-    // Add the book to library
+    // Add the book object to Mylibrary
     addBookToLibrary(title.value, author.value, pages.value, (isRead === 'true'));
     
-    // Re-render the library
-    CONTAINER.innerHTML = '';
-    appendCardsToContainer();
-    addRemoveListeners();
+    // Re-render the library container
+    renderLibrary();
 
-    // Clean the input field in the form
+    // Clean the input fields of the form
     title.value = '';
     author.value = '';
     pages.value = '';
@@ -95,20 +99,42 @@ function hideForm(event) {
     }
 }
 
+function addReadToggle() {
+    // Set click listeners on every isRead buttons
+    let isReadButtons = document.querySelectorAll('.isRead-button');
+    isReadButtons.forEach(button => {
+        button.addEventListener('click', event => {
+            // Toggle the text to "Read" or "Unread"
+            const isReadButton = event.target;
+            isReadButton.textContent = (isReadButton.textContent === 'Read' ? 'Unread': 'Read');
+            // Toggle the isRead status in book object
+            const index = isReadButton.parentNode.parentNode.dataset.index;
+            myLibrary[index].toggleRead();
+        });
+    });
+}
+
 function addRemoveListeners() {
+    // Set click-listeners on every remove-button
     const remove_buttons = document.querySelectorAll('button.remove-button');
     remove_buttons.forEach(button => {
         button.addEventListener('click', event => {
+            // Get the index of the clicked node
             const triggeredCard = event.target.parentNode.parentNode;
             const index = triggeredCard.dataset.index;
-            // Delete the book from the library
+            // Delete the book from Mylibrary
             myLibrary.splice(index, 1);
-            // Re-render the library
-            CONTAINER.innerHTML = '';
-            appendCardsToContainer();
-            addRemoveListeners();
+            // Re-render the library container
+            renderLibrary();
         })
     })
+}
+
+function renderLibrary() {
+    CONTAINER.innerHTML = '';
+    appendCardsToContainer();
+    addReadToggle();
+    addRemoveListeners();
 }
 
 
@@ -117,15 +143,17 @@ const ADD_BOOK_CONTAINER = document.querySelector('#book-form-container');
 const ADD_BUTTON = document.querySelector('.button-div>button');
 const ADD_BOOK_SUBMIT = document.querySelector('#addBookSubmit');
 
+// Show the form after click the 'New Book' button
+ADD_BUTTON.addEventListener('click', showForm);
+// Add the book the library after clicked the submit button
+ADD_BOOK_SUBMIT.addEventListener('click', addBook);
+// Hide the form after clicked elsewhere but the form
+ADD_BOOK_CONTAINER.addEventListener('click', hideForm);
+
 // Test, add book objects to the array
 for (let i = 0; i < 30; i++) {
     addBookToLibrary(`Book${i}`, 'J.K Rolin', '300', true);
 }
 
-// Create and append cards to container using the book in library
-appendCardsToContainer();
-addRemoveListeners();
-
-ADD_BUTTON.addEventListener('click', showForm);
-ADD_BOOK_CONTAINER.addEventListener('click', hideForm);
-ADD_BOOK_SUBMIT.addEventListener('click', addBook);
+// Create and append book cards to container using the book objects in Mylibrary
+renderLibrary();
