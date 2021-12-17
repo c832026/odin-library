@@ -31,9 +31,12 @@ function appendCardsToContainer() {
                 const togglePara = document.createElement('div');
                 const readToggleButton = document.createElement('button');
                 if (book[property] === true) {
+                    // Set button text to "Read" or "Unread" and setting seperate class for styling
                     readToggleButton.textContent = 'Read';
+                    readToggleButton.classList.add('isRead');
                 } else {
                     readToggleButton.textContent = 'Unread';
+                    readToggleButton.classList.add('unRead');
                 }
 
                 readToggleButton.classList.add('isRead-button');
@@ -91,6 +94,8 @@ function addBook(event) {
 
 function showForm() {
     ADD_BOOK_CONTAINER.style.display = 'block';
+    const inputTitle = document.querySelector('#input-title');
+    inputTitle.focus();
 }
 
 function hideForm(event) {
@@ -107,6 +112,9 @@ function addReadToggle() {
             // Toggle the text to "Read" or "Unread"
             const isReadButton = event.target;
             isReadButton.textContent = (isReadButton.textContent === 'Read' ? 'Unread': 'Read');
+            // Toggle the color
+            isReadButton.classList.toggle('isRead');
+            isReadButton.classList.toggle('unRead');
             // Toggle the isRead status in book object
             const index = isReadButton.parentNode.parentNode.dataset.index;
             myLibrary[index].toggleRead();
@@ -150,10 +158,9 @@ ADD_BOOK_SUBMIT.addEventListener('click', addBook);
 // Hide the form after clicked elsewhere but the form
 ADD_BOOK_CONTAINER.addEventListener('click', hideForm);
 
-// Test, add book objects to the array
-for (let i = 0; i < 30; i++) {
-    addBookToLibrary(`Book${i}`, 'J.K Rolin', '300', true);
-}
+// Default books for demonstration
+addBookToLibrary(`Harry Potter`, 'J. K. Rowling', '223', true);
+addBookToLibrary(`Game of Thrones`, 'George Martin', '864', false);
 
 // Create and append book cards to container using the book objects in Mylibrary
 renderLibrary();
